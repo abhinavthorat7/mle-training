@@ -11,8 +11,7 @@ from scipy.stats import randint
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import GridSearchCV
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import matplotlib 
 import numpy as np
 import pandas as pd
 from six.moves import urllib
@@ -31,19 +30,13 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     housing_tgz.extractall(path=housing_path)
     housing_tgz.close()
 
-
 fetch_housing_data()
 
-
-
 def load_housing_data(housing_path=HOUSING_PATH):
-    csv_path = os.path.join(housing_path, "housing.csv")
+    csv_path = os.path.join(housing_path,"housing.csv")
     return pd.read_csv(csv_path)
 
-
 housing = load_housing_data()
-
-
 
 train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
 
@@ -52,8 +45,6 @@ housing["income_cat"] = pd.cut(
     bins=[0.0, 1.5, 3.0, 4.5, 6.0, np.inf],
     labels=[1, 2, 3, 4, 5],
 )
-
-
 
 split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, 
                                random_state=42)
@@ -112,9 +103,10 @@ X = imputer.transform(housing_num)
 
 housing_tr = pd.DataFrame(X, columns=housing_num.columns,
                           index=housing.index)
-housing_tr["rooms_per_household"] = housing_tr["total_rooms"] / housing_tr["households"]
+housing_tr["rooms_per_household"] =(
+    housing_tr["total_rooms"] / housing_tr["households"])
 housing_tr["bedrooms_per_room"] = (
-    housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
+   housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
 )
 housing_tr["population_per_household"] = (
     housing_tr["population"] / housing_tr["households"]
