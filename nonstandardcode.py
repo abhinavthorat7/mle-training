@@ -1,11 +1,22 @@
 import os
 import tarfile
-
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
+from sklearn.tree import DecisionTreeRegressor
+from scipy.stats import randint
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from six.moves import urllib
+
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join("datasets", "housing")
@@ -23,7 +34,6 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
 
 fetch_housing_data()
 
-import pandas as pd
 
 
 def load_housing_data(housing_path=HOUSING_PATH):
@@ -33,7 +43,7 @@ def load_housing_data(housing_path=HOUSING_PATH):
 
 housing = load_housing_data()
 
-from sklearn.model_selection import train_test_split
+
 
 train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
 
@@ -43,9 +53,10 @@ housing["income_cat"] = pd.cut(
     labels=[1, 2, 3, 4, 5],
 )
 
-from sklearn.model_selection import StratifiedShuffleSplit
 
-split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+
+split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, 
+                               random_state=42)
 for train_index, test_index in split.split(housing, housing["income_cat"]):
     strat_train_set = housing.loc[train_index]
     strat_test_set = housing.loc[test_index]
@@ -55,7 +66,8 @@ def income_cat_proportions(data):
     return data["income_cat"].value_counts() / len(data)
 
 
-train_set, test_set = train_test_split(housing, test_size=0.2, random_state=42)
+train_set, test_set = train_test_split(housing, test_size=0.2,
+                                       random_state=42)
 
 compare_props = pd.DataFrame(
     {
@@ -89,7 +101,7 @@ housing = strat_train_set.drop(
 )  # drop labels for training set
 housing_labels = strat_train_set["median_house_value"].copy()
 
-from sklearn.impute import SimpleImputer
+
 
 imputer = SimpleImputer(strategy="median")
 
@@ -98,7 +110,8 @@ housing_num = housing.drop("ocean_proximity", axis=1)
 imputer.fit(housing_num)
 X = imputer.transform(housing_num)
 
-housing_tr = pd.DataFrame(X, columns=housing_num.columns, index=housing.index)
+housing_tr = pd.DataFrame(X, columns=housing_num.columns,
+                          index=housing.index)
 housing_tr["rooms_per_household"] = housing_tr["total_rooms"] / housing_tr["households"]
 housing_tr["bedrooms_per_room"] = (
     housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
@@ -108,14 +121,15 @@ housing_tr["population_per_household"] = (
 )
 
 housing_cat = housing[["ocean_proximity"]]
-housing_prepared = housing_tr.join(pd.get_dummies(housing_cat, drop_first=True))
+housing_prepared = housing_tr.join(pd.get_dummies(housing_cat,
+                                                  drop_first=True))
 
-from sklearn.linear_model import LinearRegression
+
 
 lin_reg = LinearRegression()
 lin_reg.fit(housing_prepared, housing_labels)
 
-from sklearn.metrics import mean_squared_error
+
 
 housing_predictions = lin_reg.predict(housing_prepared)
 lin_mse = mean_squared_error(housing_labels, housing_predictions)
@@ -123,13 +137,13 @@ lin_rmse = np.sqrt(lin_mse)
 lin_rmse
 
 
-from sklearn.metrics import mean_absolute_error
+
 
 lin_mae = mean_absolute_error(housing_labels, housing_predictions)
 lin_mae
 
 
-from sklearn.tree import DecisionTreeRegressor
+
 
 tree_reg = DecisionTreeRegressor(random_state=42)
 tree_reg.fit(housing_prepared, housing_labels)
@@ -140,9 +154,7 @@ tree_rmse = np.sqrt(tree_mse)
 tree_rmse
 
 
-from scipy.stats import randint
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import RandomizedSearchCV
+
 
 param_distribs = {
     "n_estimators": randint(low=1, high=200),
@@ -164,13 +176,14 @@ for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
     print(np.sqrt(-mean_score), params)
 
 
-from sklearn.model_selection import GridSearchCV
+
 
 param_grid = [
     # try 12 (3×4) combinations of hyperparameters
     {"n_estimators": [3, 10, 30], "max_features": [2, 4, 6, 8]},
     # then try 6 (2×3) combinations with bootstrap set as False
-    {"bootstrap": [False], "n_estimators": [3, 10], "max_features": [2, 3, 4]},
+    {"bootstrap": [False], "n_estimators": [3, 10],
+     "max_features": [2, 3, 4]},
 ]
 
 forest_reg = RandomForestRegressor(random_state=42)
@@ -214,7 +227,8 @@ X_test_prepared["population_per_household"] = (
 )
 
 X_test_cat = X_test[["ocean_proximity"]]
-X_test_prepared = X_test_prepared.join(pd.get_dummies(X_test_cat, drop_first=True))
+X_test_prepared = X_test_prepared.join(pd.get_dummies(X_test_cat, 
+                                                      drop_first=True))
 
 
 final_predictions = final_model.predict(X_test_prepared)
