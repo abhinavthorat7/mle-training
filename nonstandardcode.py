@@ -28,8 +28,7 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     urllib.request.urlretrieve(housing_url, tgz_path)
     housing_tgz = tarfile.open(tgz_path)
     housing_tgz.extractall(path=housing_path)
-    housing_tgz.close()
-    
+    housing_tgz.close() 
 
 fetch_housing_data()
 
@@ -115,7 +114,7 @@ housing_tr["rooms_per_household"] = (
     housing_tr["total_rooms"] / housing_tr["households"])
 housing_tr["bedrooms_per_room"] = (
    housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
-)
+    )
 housing_tr["population_per_household"] = (
     housing_tr["population"] / housing_tr["households"]
 )
