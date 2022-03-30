@@ -16,6 +16,11 @@ import numpy as np
 import pandas as pd
 from six.moves import urllib
 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from six.moves import urllib
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join("datasets", "housing")
@@ -31,6 +36,7 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     housing_tgz.close() 
 
 fetch_housing_data()
+
 
 
 def load_housing_data(housing_path=HOUSING_PATH):
@@ -100,7 +106,6 @@ housing = strat_train_set.drop(
 housing_labels = strat_train_set["median_house_value"].copy()
 
 
-
 imputer = SimpleImputer(strategy="median")
 
 housing_num = housing.drop("ocean_proximity", axis=1)
@@ -129,12 +134,10 @@ lin_reg = LinearRegression()
 lin_reg.fit(housing_prepared, housing_labels)
 
 
-
 housing_predictions = lin_reg.predict(housing_prepared)
 lin_mse = mean_squared_error(housing_labels, housing_predictions)
 lin_rmse = np.sqrt(lin_mse)
 lin_rmse
-
 
 
 
@@ -151,7 +154,6 @@ housing_predictions = tree_reg.predict(housing_prepared)
 tree_mse = mean_squared_error(housing_labels, housing_predictions)
 tree_rmse = np.sqrt(tree_mse)
 tree_rmse
-
 
 
 
